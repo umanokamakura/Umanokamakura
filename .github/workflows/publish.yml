@@ -1,0 +1,53 @@
+# push するたびに build.py でページを作り直して、GitHub Pages に公開する設定
+name: サイトを公開
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: ページを作る
+        run: python build.py
+
+      - name: 公開するファイルだけをまとめる
+        run: |
+          mkdir _site
+          for f in *; do
+            case "$f" in
+              _*|build.py|*.bat|使い方.md) ;;
+              *) cp -r "$f" _site/ ;;
+            esac
+          done
+          echo "公開されるファイル:"
+          find _site -type f | sort
+
+      - uses: actions/upload-pages-artifact@v3
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

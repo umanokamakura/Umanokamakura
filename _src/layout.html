@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>GAMES - 馬のかまくら</title>
-    <meta name="description" content="遊んだゲーム、考えたこと、そして勝負の記録。">
+    <title>{{title}}</title>
+    <meta name="description" content="{{description}}">
     <meta name="google-site-verification" content="aZCdxDvmbbN_nN5fZ3OEjmBxBDk89kPFtzbjxtskLPw" />
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="">
+<body class="{{body_class}}">
 
 <!-- ここは _src/layout.html から自動生成されています。直接編集しないでください -->
 
@@ -21,23 +21,12 @@
     <p>WELCOME TO MY WORLD</p>
 
     <nav class="menu">
-        <a href="index.html">✦ HOME</a>
-        <a href="diary.html">✦ DIARY</a>
-        <a href="anime.html">✦ ANIME</a>
-        <a href="games.html">❅ GAMES</a>
+{{nav}}
     </nav>
 
 </div>
 
-<main class="content">
-
-<h2>GAMES</h2>
-
-<p class="intro">遊んだゲーム、考えたこと、そして勝負の記録。</p>
-
-<p class="empty">今後追加予定</p>
-
-</main>
+{{content}}
 
 </body>
 </html>

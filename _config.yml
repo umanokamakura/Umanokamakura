@@ -1,0 +1,6 @@
+# GitHub Pages 用の設定
+# サイトの更新用ファイルを公開しないようにする
+exclude:
+  - build.py
+  - 更新する.bat
+  - 使い方.md

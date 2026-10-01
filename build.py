@@ -25,6 +25,9 @@ SRC = ROOT / "_src"
 SITE_NAME = "馬のかまくら"
 SITE_DESCRIPTION = "「馬のかまくら」は、アニメ、ゲーム、日々考えたことなどを適当に書いている個人サイトです。"
 
+# 隠しページのファイル名（推測されにくい名前にしています。変えてもOK）
+SECRET_FILE = "kamakura-no-oku.html"
+
 # トップページの「お知らせ」に出す件数
 NEWS_COUNT = 10
 
@@ -43,6 +46,18 @@ CATEGORIES = [
 # ---------------------------------------------------------------
 
 BLOCK_TAG = re.compile(r"^\s*<(div|ul|ol|img|iframe|table|blockquote|figure|h[1-6]|p|hr|section)\b", re.I)
+
+
+YOUTUBE = re.compile(
+    r"^\s*https?://(?:www\.|m\.|music\.)?(?:youtube\.com/(?:watch\?(?:.*&)?v=|shorts/|live/|embed/)|youtu\.be/)"
+    r"([A-Za-z0-9_-]{11})\S*\s*$")
+
+
+def youtube_embed(video_id):
+    return (f'<div class="video"><iframe src="https://www.youtube-nocookie.com/embed/{video_id}" '
+            f'title="YouTube動画" loading="lazy" '
+            f'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" '
+            f'referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>')
 
 
 def inline(text):
@@ -65,7 +80,10 @@ def render_body(text, heading_tag="h4"):
     for block in re.split(r"\n[ \t]*\n", text.strip("\n")):
         if not block.strip():
             continue
-        if block.startswith("## "):
+        yt = YOUTUBE.match(block)
+        if yt:
+            out.append(youtube_embed(yt.group(1)))
+        elif block.startswith("## "):
             out.append(f"<{heading_tag}>{inline(block[3:].strip())}</{heading_tag}>")
         elif BLOCK_TAG.match(block):
             out.append(block)
@@ -76,7 +94,8 @@ def render_body(text, heading_tag="h4"):
 
 
 def plain_summary(text, length=110):
-    t = re.sub(r"<[^>]+>", "", text)
+    t = "\n".join(l for l in text.split("\n") if not YOUTUBE.match(l))
+    t = re.sub(r"<[^>]+>", "", t)
     t = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", t)
     t = re.sub(r"[\s　*#]+", " ", t).strip()
     return t[:length] + ("…" if len(t) > length else "")
@@ -97,6 +116,8 @@ def read_source(path):
                 k, v = line.split(":", 1)
                 meta[k.strip()] = v.strip()
         body = m.group(2)
+    # 「//」で始まる行はメモ扱いで、ページには出さない
+    body = "\n".join(l for l in body.split("\n") if not l.lstrip().startswith("//"))
     return meta, body
 
 
@@ -142,9 +163,11 @@ def nav_html(active):
     return "\n".join(links)
 
 
-def render_page(layout, *, title, description, active, content, body_class=""):
+def render_page(layout, *, title, description, active, content, body_class="", head_extra=""):
     page = layout
     for k, v in {
+        "{{head_extra}}": head_extra,
+        "{{secret_url}}": SECRET_FILE,
         "{{title}}": html.escape(title),
         "{{description}}": html.escape(description),
         "{{nav}}": nav_html(active),
@@ -234,6 +257,30 @@ def build_home(layout, posts):
                        body_class="home")
 
 
+def build_secret(layout):
+    meta, body = read_source(SRC / "secret.md")
+    content = f"""<main class="content secret-room">
+
+<h2>{html.escape(meta.get("heading", "SECRET"))}</h2>
+
+<p class="intro">{html.escape(meta.get("intro", ""))}</p>
+
+<article class="secret-body">
+{render_body(body)}
+</article>
+
+<p class="secret-exit"><a href="index.html">❅ 外の世界へ戻る</a></p>
+
+</main>"""
+    return render_page(layout,
+                       title=meta.get("title", f"??? - {SITE_NAME}"),
+                       description="",
+                       active="",
+                       content=content,
+                       body_class="secret",
+                       head_extra='    <meta name="robots" content="noindex, nofollow">')
+
+
 def main():
     try:
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -261,6 +308,9 @@ def main():
     newest_first = sorted(posts, key=lambda p: (p["date"], p["file"]), reverse=True)
 
     write("index.html", build_home(layout, newest_first))
+
+    if (SRC / "secret.md").exists():
+        write(SECRET_FILE, build_secret(layout))
 
     for key, label, intro in CATEGORIES:
         cat_posts = [p for p in newest_first if p["category"] == key]

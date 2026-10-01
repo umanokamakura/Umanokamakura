@@ -7,6 +7,7 @@
     <meta name="description" content="{{description}}">
     <meta name="google-site-verification" content="aZCdxDvmbbN_nN5fZ3OEjmBxBDk89kPFtzbjxtskLPw" />
     <link rel="stylesheet" href="style.css">
+{{head_extra}}
 </head>
 <body class="{{body_class}}">
 
@@ -14,7 +15,7 @@
 
 <div class="hero">
 
-    <div class="crown">❅</div>
+    <div class="crown" id="crown">❅</div>
 
     <h1>馬のかまくら</h1>
 
@@ -27,6 +28,26 @@
 </div>
 
 {{content}}
+
+<script>
+/* ❅ をすばやく5回クリックすると……？ */
+(function () {
+    var crown = document.getElementById("crown");
+    if (!crown) return;
+    var count = 0, timer = null;
+    crown.addEventListener("click", function () {
+        count++;
+        crown.style.transform = "rotate(" + (count * 72) + "deg) scale(" + (1 + count * 0.08) + ")";
+        clearTimeout(timer);
+        if (count >= 5) {
+            crown.classList.add("crown-open");
+            setTimeout(function () { location.href = "{{secret_url}}"; }, 700);
+            return;
+        }
+        timer = setTimeout(function () { count = 0; crown.style.transform = ""; }, 1500);
+    });
+})();
+</script>
 
 </body>
 </html>

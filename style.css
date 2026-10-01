@@ -474,3 +474,159 @@ a:hover {
         letter-spacing: 1px;
     }
 }
+
+
+/* =========================
+   隠しページへの入口（❅）
+========================= */
+
+.crown {
+    display: inline-block;
+    user-select: none;
+    transition: transform 0.35s ease, text-shadow 0.35s ease;
+}
+
+.crown-open {
+    transform: rotate(720deg) scale(2.2) !important;
+    text-shadow:
+        0 0 20px rgba(255, 236, 200, 1),
+        0 0 60px rgba(255, 200, 140, 0.9);
+    transition: transform 0.7s ease-in, text-shadow 0.7s ease-in;
+}
+
+
+/* =========================
+   隠しページ「かまくらの奥」
+========================= */
+
+body.secret {
+    background:
+        radial-gradient(ellipse at 50% 75%, rgba(255, 170, 90, 0.35) 0%, rgba(255, 170, 90, 0) 55%),
+        linear-gradient(180deg, #0b1118 0%, #161b24 45%, #2a2420 100%);
+    background-color: #2a2420;
+    color: #f3e6d6;
+}
+
+body.secret .hero {
+    min-height: 0;
+    padding-bottom: 20px;
+    opacity: 0.55;
+}
+
+body.secret .hero .menu {
+    display: none;
+}
+
+body.secret .crown {
+    color: #ffe4c2;
+    text-shadow: 0 0 14px rgba(255, 190, 120, 0.9);
+}
+
+.secret-room h2 {
+    color: #ffe9cf;
+    letter-spacing: 12px;
+    text-shadow:
+        0 0 18px rgba(255, 180, 100, 0.55);
+    animation: flicker 4s infinite;
+}
+
+.secret-room .intro {
+    color: #e8cfb2;
+}
+
+.secret-body {
+    max-width: 760px;
+    margin: 0 auto 40px;
+    padding: 35px 40px;
+
+    color: #f1e3d2;
+    line-height: 2.1;
+    letter-spacing: 0.04em;
+
+    background: rgba(40, 28, 20, 0.55);
+    border: 1px solid rgba(255, 200, 150, 0.25);
+    border-radius: 14px;
+
+    box-shadow:
+        0 0 40px rgba(255, 160, 80, 0.15),
+        inset 0 0 30px rgba(0, 0, 0, 0.35);
+}
+
+.secret-body h4 {
+    margin: 2em 0 0.6em;
+    font-family: serif;
+    font-weight: normal;
+    font-size: 1.2rem;
+    color: #ffd9a8;
+    letter-spacing: 0.15em;
+}
+
+.secret-body h4::before {
+    content: "✧ ";
+}
+
+.secret-body p {
+    margin: 0 0 1.4em;
+}
+
+.secret-body a {
+    color: #ffcf96;
+}
+
+.secret-exit {
+    text-align: center;
+    margin: 0 0 80px;
+}
+
+.secret-exit a {
+    display: inline-block;
+    padding: 11px 24px;
+
+    color: #ffe9cf;
+    text-decoration: none;
+
+    border: 1px solid rgba(255, 210, 160, 0.5);
+    border-radius: 25px;
+    background: rgba(255, 200, 150, 0.08);
+
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.secret-exit a:hover {
+    color: #2a2018;
+    background: #ffe4c2;
+}
+
+@keyframes flicker {
+    0%, 100% { opacity: 1; }
+    45% { opacity: 0.92; }
+    50% { opacity: 0.8; }
+    55% { opacity: 0.95; }
+}
+
+@media (max-width: 600px) {
+    .secret-body {
+        margin: 0 15px 40px;
+        padding: 25px 22px;
+    }
+}
+
+
+/* =========================
+   YouTube の埋め込み
+========================= */
+
+.video {
+    margin: 0 0 1.5em;
+    aspect-ratio: 16 / 9;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.video iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
